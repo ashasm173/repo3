@@ -1,0 +1,67 @@
+<html xmlns:MMString="http://www.macromedia.com/schemes/data/string/">
+<head>
+<script language="javascript" >
+
+// Title: JavaScript Tester
+// Version: 1.0
+// Author: Mark Erickson
+// Copyright: 1999 Macromedia, Inc. All rights reserved
+
+
+//---------------    LOCAL FUNCTIONS   ---------------
+
+function saveExtension(curDOM) {
+  var curHTML = DWfile.read(curDOM.URL);
+  var tempFilename = dw.getConfigurationPath() + '/Shared/MM/Cache/empty.htm';
+  if (DWfile.exists(tempFilename)) {
+    var tempDOM = dw.getDocumentDOM(tempFilename);
+    tempDOM.documentElement.outerHTML = curHTML;
+    var atrStr = DWfile.getAttributes(curDOM.URL);
+    if (tempDOM.body.outerHTML != curDOM.body.outerHTML && (atrStr.indexOf('R') == -1))
+    {
+      tempDOM.body.outerHTML = curDOM.body.outerHTML;
+      DWfile.write(curDOM.URL, tempDOM.documentElement.outerHTML);
+    }
+  }
+}
+
+function insertResult() {
+  dw.getDocumentDOM().insertHTML(document.evalForm.r.value,false);
+}
+
+function evalJS() {
+   var rtnVal;
+   rtnVal = eval(document.evalForm.j.value);
+   document.evalForm.r.value = rtnVal;
+}
+
+function cleanupUI() {
+  window.close();
+}
+
+function initUI() {
+  document.evalForm.j.focus(); //set focus on textbox
+  document.evalForm.r.select(); //set insertion point into textbox
+
+}
+
+//---------------     API FUNCTIONS    ---------------
+
+function commandButtons() {
+  return new Array( "Eval","evalJS()"
+                  , "Close", "saveExtension(document);cleanupUI();"
+                  , "Insert","insertResult()"
+                   );
+}
+</script>
+
+<title><MMString:loadString id="Commands/JS_eval/title" /></title>
+</head>
+<body onLoad="initUI()">
+<form name="evalForm" method="post" action="">
+  <textarea cols="130" rows="17" name="j" wrap="VIRTUAL">var theDOM = dw.getDocumentDOM(); 
+theDOM.insertHTML('&lt;meta name=&quot;description&quot; content=&quot;123&quot;&gt;'); </textarea>
+  <textarea cols="130" rows="5" name="r" wrap="VIRTUAL"><MMString:loadString id="Commands/JS_eval/text/undefined" /></textarea>
+</form>
+</body>
+</html>
